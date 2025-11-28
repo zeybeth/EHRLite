@@ -1,0 +1,104 @@
+﻿@using EHRLite.Models
+@model List<LabResult>
+
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Tahlil Sonuçları (@ViewBag.VisitDate)</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="LabResult" asp-action="Create" asp-route-visitId="@ViewBag.VisitId" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Yeni Sonuç Ekle
+            </a>
+            <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@ViewBag.PatientId" class="btn btn-secondary">
+                Geri Dön
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Test Adı</th>
+                    <th>Değer</th>
+                    <th>Birim</th>
+                    <th>Referans Aralığı</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                    <tr>
+                        <td>@obj.TestName</td>
+                        <td>@obj.Value</td>
+                        <td>@obj.Unit</td>
+                        <td>@obj.MinReference - @obj.MaxReference</td>
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="LabResult" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">Düzenle</a>
+                                <a asp-controller="LabResult" asp-action="History" asp-route-patientId="@ViewBag.PatientId" asp-route-testName="@obj.TestName" class="btn btn-success mx-2">Geçmiş</a>
+                                <a asp-controller="LabResult" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">Sil</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">Bu muayeneye ait laboratuvar sonucu bulunmamaktadır.</div>
+    }
+    <hr />
+
+    <div class="row mt-4 mb-5">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Sonuç Grafiği</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="labChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ViewBag'den gelen verileri güvenli şekilde JS dizisine çeviriyoruz
+        var testIsimleri = @Html.Raw(Json.Serialize(ViewBag.TestNames));
+        var testDegerleri = @Html.Raw(Json.Serialize(ViewBag.TestValues));
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Eğer veri yoksa grafik çizmeye çalışma
+            if(testIsimleri == null || testIsimleri.length === 0) return;
+
+            const ctx = document.getElementById('labChart');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: testIsimleri,
+                    datasets: [{
+                        label: 'Ölçülen Değerler',
+                        data: testDegerleri,
+                        borderWidth: 1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</div>
