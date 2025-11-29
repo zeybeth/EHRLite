@@ -139,24 +139,21 @@ namespace EHRLite.Controllers
         // GET: Belirli bir testin zaman içindeki değişimini gösterir (Longitudinal Chart)
         public IActionResult History(int patientId, string testName)
         {
-            // 1. O hastanın tüm muayenelerini bul
-            // 2. O muayenelerdeki, ismi 'testName' olan tüm sonuçları çek
-            // 3. Tarihe göre sırala
-
             var historyData = _labRepo.GetAll(x => x.TestName == testName && x.Visit.PatientId == patientId, includeProperties: "Visit")
                                       .OrderBy(x => x.Visit.VisitDate)
                                       .Select(x => new
                                       {
                                           Date = x.Visit.VisitDate.ToShortDateString(),
-                                          Value = x.Value
+                                          Value = x.Value,
+                                          Min = x.MinReference, // YENİ
+                                          Max = x.MaxReference  // YENİ
                                       })
                                       .ToList();
 
             ViewBag.TestName = testName;
 
-            // Verileri grafik formatına ayır
-            ViewBag.Dates = historyData.Select(x => x.Date).ToList();
-            ViewBag.Values = historyData.Select(x => x.Value).ToList();
+            // Tüm veriyi JSON olarak View'a gönderelim, JS orada parçalasın
+            ViewBag.ChartData = historyData;
 
             return View();
         }

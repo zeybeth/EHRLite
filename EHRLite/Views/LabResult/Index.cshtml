@@ -31,15 +31,35 @@
             <tbody>
                 @foreach (var obj in Model)
                 {
-                    <tr>
+                    // REFERANS KONTROLÜ (BACKEND MANTIĞI BURADA)
+                    // Değer min'den küçükse VEYA max'tan büyükse "isAbnormal" true olur.
+                    bool isAbnormal = false;
+                    if (obj.MinReference != null && obj.Value < obj.MinReference) { isAbnormal = true; }
+                    if (obj.MaxReference != null && obj.Value > obj.MaxReference) { isAbnormal = true; }
+
+                    // Eğer anormalse yazı rengini kırmızı (text-danger) ve kalın (fw-bold) yapıyoruz
+                    <tr class="@(isAbnormal ? "table-danger" : "")">
                         <td>@obj.TestName</td>
-                        <td>@obj.Value</td>
+
+                        <td class="@(isAbnormal ? "text-danger fw-bold" : "")">
+                            @obj.Value
+                            @if (isAbnormal)
+                            {
+                                <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                            }
+                        </td>
+
                         <td>@obj.Unit</td>
                         <td>@obj.MinReference - @obj.MaxReference</td>
                         <td>
                             <div class="w-75 btn-group" role="group">
                                 <a asp-controller="LabResult" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">Düzenle</a>
-                                <a asp-controller="LabResult" asp-action="History" asp-route-patientId="@ViewBag.PatientId" asp-route-testName="@obj.TestName" class="btn btn-success mx-2">Geçmiş</a>
+
+                                <a asp-controller="LabResult" asp-action="History"
+                                   asp-route-patientId="@ViewBag.PatientId"
+                                   asp-route-testName="@obj.TestName"
+                                   class="btn btn-success mx-2">Geçmiş</a>
+
                                 <a asp-controller="LabResult" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">Sil</a>
                             </div>
                         </td>
@@ -52,6 +72,7 @@
     {
         <div class="alert alert-info">Bu muayeneye ait laboratuvar sonucu bulunmamaktadır.</div>
     }
+
     <hr />
 
     <div class="row mt-4 mb-5">
@@ -68,26 +89,56 @@
     </div>
 
     <script>
-        // ViewBag'den gelen verileri güvenli şekilde JS dizisine çeviriyoruz
-        var testIsimleri = @Html.Raw(Json.Serialize(ViewBag.TestNames));
-        var testDegerleri = @Html.Raw(Json.Serialize(ViewBag.TestValues));
+        // DÖNGÜYÜ KIRAN GÜVENLİ VERİ AKTARIMI
+        var labData = @Html.Raw(Json.Serialize(Model.Select(x => new {
+            testName = x.TestName,
+            value = x.Value,
+            minReference = x.MinReference,
+            maxReference = x.MaxReference
+        })));
+
+        var labels = [];
+        var values = [];
+        var backgroundColors = [];
+        var borderColors = [];
+
+        if (labData) {
+            labData.forEach(function(item) {
+                labels.push(item.testName);
+                values.push(item.value);
+
+                var min = item.minReference;
+                var max = item.maxReference;
+                var isRisky = false;
+
+                if(min != null && item.value < min) isRisky = true;
+                if(max != null && item.value > max) isRisky = true;
+
+                if (isRisky) {
+                    backgroundColors.push('rgba(255, 99, 132, 0.6)'); 
+                    borderColors.push('rgba(255, 99, 132, 1)');
+                } else {
+                    backgroundColors.push('rgba(54, 162, 235, 0.6)');
+                    borderColors.push('rgba(54, 162, 235, 1)');
+                }
+            });
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Eğer veri yoksa grafik çizmeye çalışma
-            if(testIsimleri == null || testIsimleri.length === 0) return;
+            if(labels.length === 0) return;
 
             const ctx = document.getElementById('labChart');
 
             new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', 
                 data: {
-                    labels: testIsimleri,
+                    labels: labels, 
                     datasets: [{
                         label: 'Ölçülen Değerler',
-                        data: testDegerleri,
-                        borderWidth: 1,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)'
+                        data: values, 
+                        borderWidth: 2,
+                        backgroundColor: backgroundColors, 
+                        borderColor: borderColors          
                     }]
                 },
                 options: {
@@ -95,6 +146,11 @@
                     scales: {
                         y: {
                             beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false 
                         }
                     }
                 }

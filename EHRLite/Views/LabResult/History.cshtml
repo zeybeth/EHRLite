@@ -3,43 +3,119 @@
 }
 
 <div class="container mt-5">
-    <h2 class="text-primary text-center">@ViewBag.TestName - Zaman İçindeki Değişim</h2>
-    <div class="card mt-4 shadow">
-        <div class="card-body">
-            <canvas id="historyChart"></canvas>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">@ViewBag.TestName - Zaman Çizelgesi</h4>
+            <button onclick="window.history.back()" class="btn btn-light btn-sm">Geri Dön</button>
         </div>
-    </div>
-    <div class="mt-3 text-center">
-        <button onclick="window.history.back()" class="btn btn-secondary">Geri Dön</button>
+        <div class="card-body">
+            <canvas id="historyChart" height="120"></canvas>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <small><i class="bi bi-circle-fill text-danger"></i> Kırmızı noktalar referans dışı değerleri gösterir.</small>
+        </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    var dates = @Html.Raw(Json.Serialize(ViewBag.Dates));
-    var values = @Html.Raw(Json.Serialize(ViewBag.Values));
+    // Controller'dan gelen tüm veriyi alıyoruz
+    var rawData = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+
+    // Grafik için boş diziler
+    var dates = [];
+    var values = [];
+    var minRefs = [];
+    var maxRefs = [];
+    var pointColors = []; // Nokta renkleri için dizi
+
+    if (rawData) {
+        rawData.forEach(function(item) {
+            dates.push(item.date);
+            values.push(item.value);
+
+            // Referans çizgileri için verileri doldur (Yoksa null kalsın çizilmez)
+            minRefs.push(item.min);
+            maxRefs.push(item.max);
+
+            // RENK MANTIĞI: Değer aralık dışındaysa Kırmızı, içindeyse Mavi nokta
+            var isRisky = false;
+            if(item.min != null && item.value < item.min) isRisky = true;
+            if(item.max != null && item.value > item.max) isRisky = true;
+
+            if (isRisky) {
+                pointColors.push('red'); // Riskli
+            } else {
+                pointColors.push('rgb(75, 192, 192)'); // Normal
+            }
+        });
+    }
 
     const ctx = document.getElementById('historyChart');
 
     new Chart(ctx, {
-        type: 'line', // ÇİZGİ GRAFİK (Zaman değişimi için en iyisi)
+        type: 'line',
         data: {
-            labels: dates, // X Ekseni: Tarihler
-            datasets: [{
-                label: '@ViewBag.TestName Değerleri',
-                data: values, // Y Ekseni: Sonuçlar
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1,
-                pointRadius: 5,
-                pointBackgroundColor: 'red'
-            }]
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Ölçülen Değer',
+                    data: values,
+                    borderColor: 'rgb(75, 192, 192)', // Çizgi Rengi
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    pointBackgroundColor: pointColors, // NOKTA RENKLERİ (Dinamik)
+                    pointRadius: 6, // Noktaları biraz büyüttük ki kırmızı olduğu belli olsun
+                    pointHoverRadius: 8,
+                    tension: 0.3, // Hafif dalgalı
+                    fill: false
+                },
+                // ALT SINIR ÇİZGİSİ (Gri ve Kesik Çizgi)
+                {
+                    label: 'Min Referans',
+                    data: minRefs,
+                    borderColor: 'rgba(200, 200, 200, 0.8)',
+                    borderDash: [5, 5], // Kesik çizgi efekti
+                    pointRadius: 0, // Nokta gösterme, sadece çizgi olsun
+                    borderWidth: 1,
+                    fill: false
+                },
+                // ÜST SINIR ÇİZGİSİ (Gri ve Kesik Çizgi)
+                {
+                    label: 'Max Referans',
+                    data: maxRefs,
+                    borderColor: 'rgba(200, 200, 200, 0.8)',
+                    borderDash: [5, 5], // Kesik çizgi efekti
+                    pointRadius: 0,
+                    borderWidth: 1,
+                    fill: false
+                }
+            ]
         },
         options: {
             responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             scales: {
                 y: {
-                    beginAtZero: false // Değerler 0'dan başlamak zorunda değil, değişimi görmek istiyoruz
+                    beginAtZero: false // Değerler net görünsün diye 0'a zorlamıyoruz
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        footer: function(context) {
+                            // Mouse ile üzerine gelince referansları göster
+                            var index = context[0].dataIndex;
+                            var min = minRefs[index];
+                            var max = maxRefs[index];
+                            if (min != null && max != null)
+                                return 'Ref: ' + min + ' - ' + max;
+                            return '';
+                        }
+                    }
                 }
             }
         }
