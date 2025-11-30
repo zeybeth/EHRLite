@@ -15,6 +15,14 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Yetkisiz girişlerde yönlendirilecek sayfaları belirtiyoruz
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";       // Giriş yapmamışsa buraya at
+    options.LogoutPath = "/Identity/Account/Logout";     // Çıkış yapınca buraya git
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Yetkisi yetmiyorsa buraya at
+});
+
 // 3. Identity Sayfalarının (Login/Register) çalışması için gerekli servis
 builder.Services.AddRazorPages();
 

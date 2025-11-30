@@ -6,6 +6,13 @@
 }
 
 <h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(ViewContext.HttpContext.Request.Query["ReturnUrl"]))
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        İstediğiniz sayfayı görüntülemek için önce giriş yapmalısınız.
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
         <section>
