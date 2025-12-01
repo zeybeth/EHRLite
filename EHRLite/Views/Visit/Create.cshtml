@@ -5,54 +5,46 @@
 
     <div class="border p-3 mt-4">
         <div class="row pb-2">
-            <h2 class="text-primary">Yeni Muayene Kaydı</h2>
+            <h2 class="text-primary">New Visit Record</h2>
             <hr />
         </div>
 
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="mb-3">
-            <label asp-for="VisitDate" class="p-0"></label>
+            <label asp-for="VisitDate" class="p-0">Visit Date</label>
             <input asp-for="VisitDate" class="form-control" type="datetime-local" />
             <span asp-validation-for="VisitDate" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="Diagnosis" class="p-0"></label>
+            <label asp-for="Diagnosis" class="p-0">Diagnosis</label>
             <input asp-for="Diagnosis" class="form-control" />
             <span asp-validation-for="Diagnosis" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="DoctorNotes" class="p-0"></label>
-            <textarea asp-for="DoctorNotes" class="form-control" id="summernote"></textarea>            <span asp-validation-for="DoctorNotes" class="text-danger"></span>
+            <label asp-for="DoctorNotes" class="p-0">Doctor Notes</label>
+            <textarea asp-for="DoctorNotes" class="form-control" id="summernote"></textarea>
+            <span asp-validation-for="DoctorNotes" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:150px">Kaydet</button>
-
-        <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary" style="width:150px">
-            Vazgeç
-        </a>
+        <button type="submit" class="btn btn-primary" style="width:150px">Save</button>
+        <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary" style="width:150px">Cancel</a>
     </div>
 </form>
 
 @section Scripts {
     @{
-        <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" /> 
     }
     <script>
-        $('#summernote').summernote({
-            placeholder: 'Muayene notlarını buraya giriniz...',
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-              ['style', ['style']],
-              ['font', ['bold', 'underline', 'clear']],
-              ['color', ['color']],
-              ['para', ['ul', 'ol', 'paragraph']],
-              ['table', ['table']],
-              ['view', ['fullscreen', 'codeview', 'help']]
-            ]
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                placeholder: 'Enter clinical notes here...',
+                tabsize: 2,
+                height: 200
+            });
         });
     </script>
 }

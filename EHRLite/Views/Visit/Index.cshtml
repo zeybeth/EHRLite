@@ -1,18 +1,17 @@
-﻿
-@using EHRLite.Models
+﻿@using EHRLite.Models
 @model List<Visit>
 
 <div class="container">
     <div class="row pt-4 pb-3">
         <div class="col-6">
-            <h2 class="text-primary">@ViewBag.PatientName - Muayeneler</h2>
+            <h2 class="text-primary">@ViewBag.PatientName - Visits</h2>
         </div>
         <div class="col-6 text-end">
             <a asp-controller="Visit" asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Yeni Muayene Ekle
+                <i class="bi bi-plus-circle"></i> Add New Visit
             </a>
             <a asp-controller="Patient" asp-action="Index" class="btn btn-secondary">
-                Geri Dön
+                Back to Patients
             </a>
         </div>
     </div>
@@ -22,10 +21,10 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Tarih</th>
-                    <th>Tanı</th>
-                    <th>Doktor Notu</th>
-                    <th>İşlemler</th>
+                    <th>Date</th>
+                    <th>Diagnosis</th>
+                    <th>Doctor Notes</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,17 +36,10 @@
                         <td>@Html.Raw(obj.DoctorNotes)</td>
                         <td>
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Visit" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">
-                                    Detay
-                                </a>
-
-                                <a asp-controller="LabResult" asp-action="Index" asp-route-visitId="@obj.Id" class="btn btn-info mx-2">
-                                    Tahliller
-                                </a>
-
-                                <a asp-controller="Visit" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
-                                    Sil
-                                </a>
+                                <a asp-controller="Visit" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">Edit</a>
+                                <a asp-controller="LabResult" asp-action="Index" asp-route-visitId="@obj.Id" class="btn btn-info mx-2">Lab Results</a>
+                                <a asp-controller="Visit" asp-action="Summary" asp-route-id="@obj.Id" class="btn btn-dark mx-2" target="_blank"><i class="fa-solid fa-print"></i> Print</a>
+                                <a asp-controller="Visit" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">Delete</a>
                             </div>
                         </td>
                     </tr>
@@ -57,6 +49,6 @@
     }
     else
     {
-        <div class="alert alert-warning">Bu hastaya ait henüz bir muayene kaydı bulunmamaktadır.</div>
+        <div class="alert alert-warning">No visit records found for this patient.</div>
     }
 </div>

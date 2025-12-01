@@ -3,11 +3,11 @@
 <div class="container">
     <div class="row pt-4 pb-3">
         <div class="col-6">
-            <h2 class="text-primary">Hasta Listesi</h2>
+            <h2 class="text-primary">Patient List</h2>
         </div>
         <div class="col-6 text-end">
             <a asp-controller="Patient" asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Yeni Hasta Ekle
+                <i class="bi bi-plus-circle"></i> Add New Patient
             </a>
         </div>
     </div>
@@ -15,12 +15,12 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Ad</th>
-                <th>Soyad</th>
-                <th>Doğum Tarihi</th>
-                <th>Cinsiyet</th>
-                <th>Telefon</th>
-                <th>İşlemler</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Phone</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -35,15 +35,16 @@
                     <td>
                         <div class="w-75 btn-group" role="group">
                             <a asp-controller="Patient" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">
-                                Düzenle
-                            </a>
-                            <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@obj.Id" class="btn btn-info mx-2">
-                                Muayeneler
-                            </a>
-                            <a asp-controller="Patient" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
-                                Sil
+                                Edit
                             </a>
 
+                            <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@obj.Id" class="btn btn-info mx-2">
+                                Visits
+                            </a>
+
+                            <a asp-controller="Patient" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
+                                Delete
+                            </a>
                         </div>
                     </td>
                 </tr>

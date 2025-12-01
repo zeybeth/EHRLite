@@ -20,34 +20,32 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Controller'dan gelen tüm veriyi alıyoruz
     var rawData = @Html.Raw(Json.Serialize(ViewBag.ChartData));
 
-    // Grafik için boş diziler
     var dates = [];
     var values = [];
     var minRefs = [];
     var maxRefs = [];
-    var pointColors = []; // Nokta renkleri için dizi
+    var pointColors = [];
 
     if (rawData) {
         rawData.forEach(function(item) {
             dates.push(item.date);
             values.push(item.value);
 
-            // Referans çizgileri için verileri doldur (Yoksa null kalsın çizilmez)
+            // Eğer referans değeri yoksa null dönsün ki grafik saçmalamasın
             minRefs.push(item.min);
             maxRefs.push(item.max);
 
-            // RENK MANTIĞI: Değer aralık dışındaysa Kırmızı, içindeyse Mavi nokta
+            // Risk Analizi (Kırmızı Nokta Mantığı)
             var isRisky = false;
             if(item.min != null && item.value < item.min) isRisky = true;
             if(item.max != null && item.value > item.max) isRisky = true;
 
             if (isRisky) {
-                pointColors.push('red'); // Riskli
+                pointColors.push('red');
             } else {
-                pointColors.push('rgb(75, 192, 192)'); // Normal
+                pointColors.push('rgb(75, 192, 192)');
             }
         });
     }
@@ -59,36 +57,43 @@
         data: {
             labels: dates,
             datasets: [
+                // 1. HASTA DEĞERLERİ (Mavi/Kırmızı Çizgi)
                 {
                     label: 'Ölçülen Değer',
                     data: values,
-                    borderColor: 'rgb(75, 192, 192)', // Çizgi Rengi
+                    borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                    pointBackgroundColor: pointColors, // NOKTA RENKLERİ (Dinamik)
-                    pointRadius: 6, // Noktaları biraz büyüttük ki kırmızı olduğu belli olsun
+                    pointBackgroundColor: pointColors,
+                    pointRadius: 6,
                     pointHoverRadius: 8,
-                    tension: 0.3, // Hafif dalgalı
-                    fill: false
+                    borderWidth: 3, // Çizgiyi kalınlaştırdık
+                    tension: 0.3,
+                    fill: false,
+                    order: 1 // En üstte görünsün
                 },
-                // ALT SINIR ÇİZGİSİ (Gri ve Kesik Çizgi)
-                {
-                    label: 'Min Referans',
-                    data: minRefs,
-                    borderColor: 'rgba(200, 200, 200, 0.8)',
-                    borderDash: [5, 5], // Kesik çizgi efekti
-                    pointRadius: 0, // Nokta gösterme, sadece çizgi olsun
-                    borderWidth: 1,
-                    fill: false
-                },
-                // ÜST SINIR ÇİZGİSİ (Gri ve Kesik Çizgi)
+                // 2. ÜST SINIR (Kırmızımsı Kesik Çizgi)
                 {
                     label: 'Max Referans',
                     data: maxRefs,
-                    borderColor: 'rgba(200, 200, 200, 0.8)',
-                    borderDash: [5, 5], // Kesik çizgi efekti
-                    pointRadius: 0,
-                    borderWidth: 1,
-                    fill: false
+                    borderColor: 'rgba(255, 99, 132, 0.5)', // Hafif kırmızı sınır
+                    borderWidth: 2,
+                    borderDash: [10, 5], // Uzun kesik çizgiler
+                    pointRadius: 3, // Tek veri olsa bile görünsün diye nokta koyduk
+                    pointBackgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    fill: false,
+                    order: 2
+                },
+                // 3. ALT SINIR (Mavimsi Kesik Çizgi)
+                {
+                    label: 'Min Referans',
+                    data: minRefs,
+                    borderColor: 'rgba(54, 162, 235, 0.5)', // Hafif mavi sınır
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    pointRadius: 3, // Tek veri olsa bile görünsün
+                    pointBackgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    fill: false, // Arasını boyama (Chart.js plugin olmadan karışık olabilir, şimdilik boş kalsın)
+                    order: 3
                 }
             ]
         },
@@ -100,22 +105,16 @@
             },
             scales: {
                 y: {
-                    beginAtZero: false // Değerler net görünsün diye 0'a zorlamıyoruz
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(200, 200, 200, 0.3)' // Arka plan ızgarasını belirginleştirdik
+                    }
                 }
             },
             plugins: {
-                tooltip: {
-                    callbacks: {
-                        footer: function(context) {
-                            // Mouse ile üzerine gelince referansları göster
-                            var index = context[0].dataIndex;
-                            var min = minRefs[index];
-                            var max = maxRefs[index];
-                            if (min != null && max != null)
-                                return 'Ref: ' + min + ' - ' + max;
-                            return '';
-                        }
-                    }
+                title: {
+                    display: true,
+                    text: 'Değerlerin Referans Aralıklarına Göre Değişimi'
                 }
             }
         }

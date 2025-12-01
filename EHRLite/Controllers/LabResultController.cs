@@ -157,5 +157,18 @@ namespace EHRLite.Controllers
 
             return View();
         }
+
+        // GET: Sistemdeki tüm tahlil sonuçlarını (En yeniden eskiye) listeler
+        public IActionResult AllResults()
+        {
+            // Tüm sonuçları çekiyoruz.
+            // includeProperties: "Visit,Visit.Patient" diyerek tahlilin kime ve hangi muayeneye ait olduğunu da alıyoruz.
+            var allResults = _labRepo.GetAll(includeProperties: "Visit,Visit.Patient")
+                                     .OrderByDescending(x => x.ResultDate) // En yeni en üstte
+                                     .ToList();
+
+            return View(allResults);
+        }
+
     }
 }

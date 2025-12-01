@@ -7,23 +7,23 @@ namespace EHRLite.Models
         [Key] // Bu alanın tablonun anahtarı (ID) olduğunu belirtir
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "İsim alanı boş bırakılamaz.")] // Zorunlu alan
-        [Display(Name = "Ad")] // Ekranda görünecek etiket
+        [Required(ErrorMessage = "First Name space cannot be empty")] // Zorunlu alan
+        [Display(Name = "First Name")] // Ekranda görünecek etiket
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "Soyisim alanı boş bırakılamaz.")]
-        [Display(Name = "Soyad")]
+        [Required(ErrorMessage = "Last Name space cannot be empty")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required]
-        [Display(Name = "Doğum Tarihi")]
+        [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)] // Sadece tarih tutsun, saat olmasın
         public DateTime DateOfBirth { get; set; }
 
-        [Display(Name = "Cinsiyet")]
+        [Display(Name = "Gender")]
         public string Gender { get; set; }
 
-        [Display(Name = "Telefon")]
+        [Display(Name = "Phone")]
         [Phone]
         public string PhoneNumber { get; set; }
 

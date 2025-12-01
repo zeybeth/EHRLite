@@ -4,14 +4,14 @@
 <div class="container">
     <div class="row pt-4 pb-3">
         <div class="col-6">
-            <h2 class="text-primary">Tahlil Sonuçları (@ViewBag.VisitDate)</h2>
+            <h2 class="text-primary">Lab Results (@ViewBag.VisitDate)</h2>
         </div>
         <div class="col-6 text-end">
             <a asp-controller="LabResult" asp-action="Create" asp-route-visitId="@ViewBag.VisitId" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Yeni Sonuç Ekle
+                <i class="bi bi-plus-circle"></i> Add Result
             </a>
             <a asp-controller="Visit" asp-action="Index" asp-route-patientId="@ViewBag.PatientId" class="btn btn-secondary">
-                Geri Dön
+                Back to Visits
             </a>
         </div>
     </div>
@@ -21,46 +21,33 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Test Adı</th>
-                    <th>Değer</th>
-                    <th>Birim</th>
-                    <th>Referans Aralığı</th>
-                    <th>İşlemler</th>
+                    <th>Test Name</th>
+                    <th>Value</th>
+                    <th>Unit</th>
+                    <th>Ref Range</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var obj in Model)
                 {
-                    // REFERANS KONTROLÜ (BACKEND MANTIĞI BURADA)
-                    // Değer min'den küçükse VEYA max'tan büyükse "isAbnormal" true olur.
                     bool isAbnormal = false;
                     if (obj.MinReference != null && obj.Value < obj.MinReference) { isAbnormal = true; }
                     if (obj.MaxReference != null && obj.Value > obj.MaxReference) { isAbnormal = true; }
 
-                    // Eğer anormalse yazı rengini kırmızı (text-danger) ve kalın (fw-bold) yapıyoruz
                     <tr class="@(isAbnormal ? "table-danger" : "")">
                         <td>@obj.TestName</td>
-
                         <td class="@(isAbnormal ? "text-danger fw-bold" : "")">
-                            @obj.Value
-                            @if (isAbnormal)
-                            {
-                                <i class="bi bi-exclamation-circle-fill text-danger"></i>
-                            }
+                            @obj.Value 
+                            @if(isAbnormal) { <i class="bi bi-exclamation-circle-fill text-danger"></i> }
                         </td>
-
                         <td>@obj.Unit</td>
                         <td>@obj.MinReference - @obj.MaxReference</td>
                         <td>
                             <div class="w-75 btn-group" role="group">
-                                <a asp-controller="LabResult" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">Düzenle</a>
-
-                                <a asp-controller="LabResult" asp-action="History"
-                                   asp-route-patientId="@ViewBag.PatientId"
-                                   asp-route-testName="@obj.TestName"
-                                   class="btn btn-success mx-2">Geçmiş</a>
-
-                                <a asp-controller="LabResult" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">Sil</a>
+                                <a asp-controller="LabResult" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-warning mx-2">Edit</a>
+                                <a asp-controller="LabResult" asp-action="History" asp-route-patientId="@ViewBag.PatientId" asp-route-testName="@obj.TestName" class="btn btn-success mx-2">History</a>
+                                <a asp-controller="LabResult" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">Delete</a>
                             </div>
                         </td>
                     </tr>
@@ -70,16 +57,16 @@
     }
     else
     {
-        <div class="alert alert-info">Bu muayeneye ait laboratuvar sonucu bulunmamaktadır.</div>
+        <div class="alert alert-info">No laboratory results found for this visit.</div>
     }
 
     <hr />
-
+    
     <div class="row mt-4 mb-5">
         <div class="col-md-8 offset-md-2">
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Sonuç Grafiği</h5>
+                    <h5 class="card-title mb-0">Results Chart</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="labChart"></canvas>
@@ -89,7 +76,6 @@
     </div>
 
     <script>
-        // DÖNGÜYÜ KIRAN GÜVENLİ VERİ AKTARIMI
         var labData = @Html.Raw(Json.Serialize(Model.Select(x => new {
             testName = x.TestName,
             value = x.Value,
@@ -109,12 +95,12 @@
 
                 var min = item.minReference;
                 var max = item.maxReference;
-                var isRisky = false;
+                var isAbnormal = false;
 
-                if(min != null && item.value < min) isRisky = true;
-                if(max != null && item.value > max) isRisky = true;
+                if(min != null && item.value < min) isAbnormal = true;
+                if(max != null && item.value > max) isAbnormal = true;
 
-                if (isRisky) {
+                if (isAbnormal) {
                     backgroundColors.push('rgba(255, 99, 132, 0.6)'); 
                     borderColors.push('rgba(255, 99, 132, 1)');
                 } else {
@@ -134,7 +120,7 @@
                 data: {
                     labels: labels, 
                     datasets: [{
-                        label: 'Ölçülen Değerler',
+                        label: 'Measured Value',
                         data: values, 
                         borderWidth: 2,
                         backgroundColor: backgroundColors, 

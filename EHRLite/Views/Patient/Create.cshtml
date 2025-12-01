@@ -3,55 +3,55 @@
 <form method="post">
     <div class="border p-3 mt-4">
         <div class="row pb-2">
-            <h2 class="text-primary">Yeni Hasta Oluştur</h2>
+            <h2 class="text-primary">Create New Patient</h2>
             <hr />
         </div>
 
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="mb-3">
-            <label asp-for="FirstName" class="p-0"></label>
+            <label asp-for="FirstName" class="p-0">First Name</label>
             <input asp-for="FirstName" class="form-control" />
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="LastName" class="p-0"></label>
+            <label asp-for="LastName" class="p-0">Last Name</label>
             <input asp-for="LastName" class="form-control" />
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="DateOfBirth" class="p-0"></label>
+            <label asp-for="DateOfBirth" class="p-0">Date of Birth</label>
             <input asp-for="DateOfBirth" class="form-control" type="date" />
             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Gender" class="p-0"></label>
+            <label asp-for="Gender" class="p-0">Gender</label>
             <select asp-for="Gender" class="form-select">
-                <option disabled selected>--Seçiniz--</option>
-                <option value="Erkek">Erkek</option>
-                <option value="Kadın">Kadın</option>
+                <option disabled selected>--Select--</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="PhoneNumber" class="p-0"></label>
+            <label asp-for="PhoneNumber" class="p-0">Phone Number</label>
             <input asp-for="PhoneNumber" class="form-control" />
             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Email" class="p-0"></label>
+            <label asp-for="Email" class="p-0">Email Address</label>
             <input asp-for="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:150px">Oluştur</button>
+        <button type="submit" class="btn btn-primary" style="width:150px">Create</button>
         <a asp-controller="Patient" asp-action="Index" class="btn btn-secondary" style="width:150px">
-            Listeye Dön
+            Back to List
         </a>
     </div>
 </form>
 
 @section Scripts {
     @{
-        <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" /> 
     }
 }

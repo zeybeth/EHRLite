@@ -1,8 +1,63 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-primary">EHR Lite System</h1>
+    <p class="lead text-muted">Electronic Health Records & Patient Management Platform</p>
 </div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card border-primary mb-3 shadow-sm hover-shadow h-100">
+            <div class="card-header bg-primary text-white">
+                <i class="fa-solid fa-users me-2"></i> Patient Management
+            </div>
+            <div class="card-body text-center">
+                <h4 class="card-title text-primary">Patients</h4>
+                <p class="card-text text-muted">View patient list, update records or access clinical history.</p>
+                <a asp-controller="Patient" asp-action="Index" class="btn btn-outline-primary w-100 mt-3">
+                    Go to List <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-success mb-3 shadow-sm hover-shadow h-100">
+            <div class="card-header bg-success text-white">
+                <i class="fa-solid fa-bolt me-2"></i> Quick Actions
+            </div>
+            <div class="card-body text-center">
+                <h4 class="card-title text-success">New Registration</h4>
+                <p class="card-text text-muted">Quickly register a new patient to the system.</p>
+                <a asp-controller="Patient" asp-action="Create" class="btn btn-outline-success w-100 mt-3">
+                    Add Patient <i class="fa-solid fa-plus ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-info mb-3 shadow-sm hover-shadow h-100">
+            <div class="card-header bg-info text-white">
+                <i class="fa-solid fa-chart-line me-2"></i> Analytics
+            </div>
+            <div class="card-body text-center">
+                <h4 class="card-title text-info">Lab Results</h4>
+                <p class="card-text text-muted">Analyze longitudinal lab data and view visual charts.</p>
+                <a asp-controller="LabResult" asp-action="AllResults" class="btn btn-outline-info w-100 mt-3">
+                    View Reports <i class="fa-solid fa-chart-line ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+        transition: all 0.3s ease;
+    }
+</style>

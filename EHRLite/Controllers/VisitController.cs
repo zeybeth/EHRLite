@@ -151,5 +151,20 @@ namespace EHRLite.Controllers
 
             return RedirectToAction("Index", new { patientId = hastaId });
         }
+
+        // GET: Yazdırılabilir Muayene Özeti
+        public IActionResult Summary(int id)
+        {
+            // Muayeneyi bulurken hem Hastayı (Patient) hem de Tahlilleri (LabResults) dahil ediyoruz.
+            // Repository'deki GetAll metodunu filtre vererek "Get" gibi kullanıyoruz çünkü Include özelliğine ihtiyacımız var.
+            var visit = _visitRepo.GetAll(u => u.Id == id, includeProperties: "Patient,LabResults").FirstOrDefault();
+
+            if (visit == null)
+            {
+                return NotFound();
+            }
+
+            return View(visit);
+        }
     }
 }

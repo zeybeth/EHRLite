@@ -9,14 +9,14 @@ namespace EHRLite.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Muayene tarihi zorunludur.")]
-        [Display(Name = "Muayene Tarihi")]
+        [Required(ErrorMessage = "Visit Date is mandatory")]
+        [Display(Name = "Visit Date")]
         public DateTime VisitDate { get; set; } = DateTime.Now;
 
-        [Display(Name = "Doktor Notları")]
+        [Display(Name = "Doctor Notes")]
         public string? DoctorNotes { get; set; } // Not yazmak zorunlu değilse ? koyabiliriz
 
-        [Display(Name = "Tanı / Teşhis")]
+        [Display(Name = "Diagnosis")]
         public string? Diagnosis { get; set; } // Tanı zorunlu değilse ? koyabiliriz
 
         // İLİŞKİ AYARLARI (Foreign Key)
