@@ -66,7 +66,7 @@ namespace EHRLite.Controllers
             {
                 _labRepo.Add(obj);
                 _labRepo.Save();
-                TempData["success"] = "Tahlil sonucu eklendi.";
+                TempData["success"] = "Lab Result is added";
                 return RedirectToAction("Index", new { visitId = obj.VisitId });
             }
             return View(obj);
@@ -96,7 +96,7 @@ namespace EHRLite.Controllers
             {
                 _labRepo.Update(obj);
                 _labRepo.Save();
-                TempData["success"] = "Tahlil güncellendi.";
+                TempData["success"] = "Lab Result is updated";
                 return RedirectToAction("Index", new { visitId = obj.VisitId });
             }
             return View(obj);

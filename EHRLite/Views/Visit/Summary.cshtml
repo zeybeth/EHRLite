@@ -1,33 +1,33 @@
 ﻿@model EHRLite.Models.Visit
 
 @{
-    Layout = null; // Menü ve Footer olmasın, temiz sayfa olsun
+    // Ana Layout'u (Menü, Footer) devre dışı bırak. Temiz baskı için
+    Layout = null;
 }
 
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Muayene Özeti - @Model.Patient.FirstName @Model.Patient.LastName</title>
+    <title>Visit Summary - @Model.Patient.FirstName @Model.Patient.LastName</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <style>
-        /* Sadece ekranda görünen, yazıcıda gizlenen butonlar için stil */
+        /* CSS Başlangıcı */
+        /* @@media print (Tarayıcı bu kısmı çıktı alırken kullanır) */
         @@media print {
-            .no-print
+            .no-print {
+                display: none !important;
+            }
+            /* Baskıda butonları gizle */
+            body {
+                padding: 20px;
+            }
 
-        {
-            display: none !important;
-        }
-
-        body {
-            padding: 20px;
-        }
-
-        .card {
-            border: none !important;
-        }
-        /* Kart kenarlıklarını baskıda kaldır */
+            .card {
+                border: none !important;
+            }
+            /* Kart kenarlıklarını baskıda kaldır */
         }
 
         body {
@@ -36,39 +36,38 @@
     </style>
 </head>
 <body class="bg-light">
-
     <div class="container mt-5 bg-white p-5 shadow-sm" style="max-width: 800px;">
 
         <div class="row border-bottom pb-3 mb-4 align-items-center">
             <div class="col-8">
-                <h2 class="text-primary fw-bold mb-0">EHR Lite Hastanesi</h2>
-                <p class="text-muted small mb-0">Elektronik Sağlık Kayıt Sistemi</p>
+                <h2 class="text-primary fw-bold mb-0">EHR Lite Hospital</h2>
+                <p class="text-muted small mb-0">Electronic Health Record System</p>
             </div>
             <div class="col-4 text-end">
-                <h5 class="mb-0">MUAYENE ÖZETİ</h5>
-                <small class="text-muted">Tarih: @DateTime.Now.ToString("dd.MM.yyyy")</small>
+                <h5 class="mb-0">VISIT SUMMARY</h5>
+                <small class="text-muted">Date: @DateTime.Now.ToString("dd.MM.yyyy")</small>
             </div>
         </div>
 
         <div class="row mb-4">
             <div class="col-md-6">
-                <h5 class="text-secondary border-bottom pb-1">Hasta Bilgileri</h5>
-                <p class="mb-1"><strong>Ad Soyad:</strong> @Model.Patient.FirstName @Model.Patient.LastName</p>
-                <p class="mb-1"><strong>TC / ID:</strong> @Model.Patient.Id</p>
-                <p class="mb-1"><strong>Doğum Tarihi:</strong> @Model.Patient.DateOfBirth.ToShortDateString()</p>
-                <p class="mb-1"><strong>Telefon:</strong> @Model.Patient.PhoneNumber</p>
+                <h5 class="text-secondary border-bottom pb-1">Patient Information</h5>
+                <p class="mb-1"><strong>Full Name:</strong> @Model.Patient.FirstName @Model.Patient.LastName</p>
+                <p class="mb-1"><strong>ID / Record:</strong> @Model.Patient.Id</p>
+                <p class="mb-1"><strong>Date of Birth:</strong> @Model.Patient.DateOfBirth.ToShortDateString()</p>
+                <p class="mb-1"><strong>Phone:</strong> @Model.Patient.PhoneNumber</p>
             </div>
             <div class="col-md-6">
-                <h5 class="text-secondary border-bottom pb-1">Muayene Detayı</h5>
-                <p class="mb-1"><strong>Muayene Tarihi:</strong> @Model.VisitDate.ToString("dd.MM.yyyy HH:mm")</p>
-                <p class="mb-1"><strong>Tanı (Teşhis):</strong> @Model.Diagnosis</p>
-                <p class="mb-1"><strong>Doktor:</strong> Dr. Admin</p>
+                <h5 class="text-secondary border-bottom pb-1">Visit Details</h5>
+                <p class="mb-1"><strong>Visit Date:</strong> @Model.VisitDate.ToString("dd.MM.yyyy HH:mm")</p>
+                <p class="mb-1"><strong>Diagnosis:</strong> @Model.Diagnosis</p>
+                <p class="mb-1"><strong>Doctor:</strong> Dr. Admin</p>
             </div>
         </div>
 
         <div class="row mb-4">
             <div class="col-12">
-                <h5 class="text-secondary border-bottom pb-1">Klinik Notlar</h5>
+                <h5 class="text-secondary border-bottom pb-1">Clinical Notes</h5>
                 <div class="p-3 bg-light rounded border">
                     @Html.Raw(Model.DoctorNotes)
                 </div>
@@ -79,20 +78,21 @@
         {
             <div class="row mb-4">
                 <div class="col-12">
-                    <h5 class="text-secondary border-bottom pb-1">Laboratuvar Sonuçları</h5>
+                    <h5 class="text-secondary border-bottom pb-1">Laboratory Results</h5>
                     <table class="table table-sm table-bordered mt-2">
                         <thead class="table-light">
                             <tr>
                                 <th>Test</th>
-                                <th>Sonuç</th>
-                                <th>Birim</th>
-                                <th>Referans</th>
-                                <th>Durum</th>
+                                <th>Result</th>
+                                <th>Unit</th>
+                                <th>Reference</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var lab in Model.LabResults)
                             {
+                                // Risk kontrolü (Referans aralığı dışındaysa isRisky=true olur)
                                 bool isRisky = false;
                                 if (lab.MinReference != null && lab.Value < lab.MinReference) { isRisky = true; }
                                 if (lab.MaxReference != null && lab.Value > lab.MaxReference) { isRisky = true; }
@@ -105,11 +105,10 @@
                                     <td>
                                         @if (isRisky)
                                         {
-                                            <span class="text-danger fw-bold">ANORMAL</span>
+                                            <span class="text-danger fw-bold">ABNORMAL</span>
                                         }
                                         else
                                         {
-
                                             <span class="text-success">Normal</span>
                                         }
                                     </td>
@@ -123,19 +122,19 @@
 
         <div class="row mt-5 pt-4 border-top">
             <div class="col-6">
-                <p class="small text-muted">Bu belge bilgisayar ortamında oluşturulmuştur.</p>
+                <p class="small text-muted">This document was generated electronically.</p>
             </div>
             <div class="col-6 text-end">
-                <p class="mb-5">İmza / Kaşe</p>
+                <p class="mb-5">Signature / Stamp</p>
                 <p>_______________________</p>
             </div>
         </div>
 
         <div class="text-center mt-4 no-print">
             <button onclick="window.print()" class="btn btn-lg btn-primary">
-                <i class="fa-solid fa-print"></i> Yazdır / PDF Kaydet
+                <i class="fa-solid fa-print"></i> Print / Save as PDF
             </button>
-            <button onclick="window.history.back()" class="btn btn-lg btn-secondary ms-2">Geri Dön</button>
+            <button onclick="window.history.back()" class="btn btn-lg btn-secondary ms-2">Back</button>
         </div>
 
     </div>

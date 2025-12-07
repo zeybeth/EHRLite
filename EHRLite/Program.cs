@@ -1,16 +1,15 @@
 using EHRLite.Data;
-using EHRLite.Repository; // Repository'leri görmesi için
+using EHRLite.Repository; 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabanı Bağlantısı (SQL Server) - DOĞRU OLAN BU
+// 1. Veritabanı Bağlantısı (SQL Server)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Identity (Güvenlik) Ayarları - DOĞRU OLAN BU
-// (Hatalı olan AddDefaultIdentity satırını kaldırdık)
+// 2. Identity (Güvenlik) Ayarları
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();

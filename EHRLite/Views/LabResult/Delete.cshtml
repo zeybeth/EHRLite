@@ -5,13 +5,13 @@
 
     <div class="border p-3 mt-4">
         <div class="row pb-2">
-            <h2 class="text-primary">Tahlil Sonucunu Sil</h2>
+            <h2 class="text-primary">Delete Lab Result</h2>
             <hr />
         </div>
 
         <div class="mb-3">
             <label asp-for="TestName" class="p-0"></label>
-            <input asp-for="TestName" disabled class="form-control" />
+            <input asp-for="TestName" disabled class="form-control" />@*  Bu özellik, input kutusunu kullanılamaz/tıklanamaz hale getirir. Rengi grileşir. *@
         </div>
 
         <div class="row">
@@ -26,10 +26,10 @@
         </div>
 
         <div class="alert alert-danger">
-            Bu tahlil sonucunu silmek istediğinize emin misiniz?
+            Are you sure you want to delete the Lab Result?
         </div>
 
-        <button type="submit" class="btn btn-danger" style="width:150px">Sil</button>
-        <a asp-controller="LabResult" asp-action="Index" asp-route-visitId="@Model.VisitId" class="btn btn-secondary" style="width:150px">Vazgeç</a>
+        <button type="submit" class="btn btn-danger" style="width:150px">Delete</button>
+        <a asp-controller="LabResult" asp-action="Index" asp-route-visitId="@Model.VisitId" class="btn btn-secondary" style="width:150px">Cancel</a>
     </div>
 </form>

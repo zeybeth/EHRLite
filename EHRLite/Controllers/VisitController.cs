@@ -38,7 +38,7 @@ namespace EHRLite.Controllers
 
             if (patient != null)
             {
-                // View'a veri taşıma (ViewBag) - 2. PDF'te de bu yöntem kullanılmış [cite: 317]
+                // View'a veri taşıma (ViewBag) - 2. PDF'te de bu yöntem kullanılmış
                 ViewBag.PatientName = patient.FirstName + " " + patient.LastName;
                 ViewBag.PatientId = patient.Id;
             }

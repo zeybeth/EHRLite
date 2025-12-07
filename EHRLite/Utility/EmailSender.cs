@@ -6,9 +6,9 @@ namespace EHRLite.Utility
     {
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            // Şimdilik burası boş kalacak.
+           
             // Sistem mail attığını sanacak ama aslında hiçbir şey yapmayacak.
-            // Böylece hata almadan geçeceğiz.
+            // Böylece hata almıyoruz
             return Task.CompletedTask;
         }
     }
